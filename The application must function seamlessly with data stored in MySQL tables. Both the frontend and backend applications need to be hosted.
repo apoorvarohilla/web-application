@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Snippet Submission</title>
+</head>
+<body>
+  <h1>Submit Code Snippet</h1>
+  <form id="snippetForm">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" required><br>
+
+    <label for="language">Preferred Code Language:</label><br>
+    <input type="text" id="language" name="language" required><br>
+
+    <label for="stdin">Standard Input (stdin):</label><br>
+    <textarea id="stdin" name="stdin" required></textarea><br>
+
+    <label for="code">Source Code:</label><br>
+    <textarea id="code" name="code" required></textarea><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <h1>Submitted Code Snippets</h1>
+  <table id="snippetTable" border="1">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Code Language</th>
+        <th>Standard Input (stdin)</th>
+        <th>Source Code</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody id="snippetTableBody">
+      <!-- Table rows will be dynamically populated here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Function to fetch and display snippets
+    function fetchSnippets() {
+      fetch('http://localhost:3000/snippets')
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('snippetTableBody');
+          tableBody.innerHTML = '';
+          data.forEach(snippet => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${snippet.username}</td>
+              <td>${snippet.language}</td>
+              <td>${snippet.stdin}</td>
+              <td>${snippet.code}</td>
+              <td>${snippet.timestamp}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(error => console.error('Error fetching snippets:', error));
+    }
+
+    // Form submission handling
+    document.getElementById('snippetForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      fetch('http://localhost:3000/submit', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Form submission successful:', data);
+        fetchSnippets(); // Fetch and display updated snippets
+      })
+      .catch(error => console.error('Error submitting form:', error));
+    });
+
+    // Initial fetch of snippets on page load
+    fetchSnippets();
+  </script>
+</body>
+</html>
