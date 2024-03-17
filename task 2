@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submitted Code Snippets</title>
+</head>
+<body>
+  <h1>Submitted Code Snippets</h1>
+  <table id="snippetTable" border="1">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Code Language</th>
+        <th>Standard Input (stdin)</th>
+        <th>Source Code (First 100 characters)</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows will be dynamically populated here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Fetch data from backend and populate the table
+    fetch("http://your-backend-url/snippets")
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.querySelector("#snippetTable tbody");
+        data.forEach(snippet => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${snippet.username}</td>
+            <td>${snippet.language}</td>
+            <td>${snippet.stdin}</td>
+            <td>${snippet.code.substring(0, 100)}</td>
+            <td>${new Date(snippet.timestamp).toLocaleString()}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  </script>
+</body>
+</html>
